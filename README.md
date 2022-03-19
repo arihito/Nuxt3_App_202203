@@ -64,6 +64,7 @@ export default defineComponent ({
 **setup**をscriptの開始タグに含めることでdefineComponentのexportやプロパティのreturnなど省略できる。
 ただし、自由に書きやすくなった反面、自身の管理が必要になっている。
 また、現状ではVSCodeなどのエディタが未対応のため赤くエラー表示されてしまう。
+
 リアクティブデータに関しては、refでもオブジェクトが使え、
 かつreactiveは値の受け渡しに制限(バグ)があるためrefを使用するのが一般的
 
@@ -87,9 +88,9 @@ onMounted(() => {
 ```
 
 
-## [component](https://v3.nuxtjs.org/docs/directory-structure/components#components-directory)の連携
+## [コンポーネント](https://v3.nuxtjs.org/docs/directory-structure/components#components-directory)の連携
 
-ボタンコンポーネントを作成しindex.vueにインポートする。
+部品となるボタンコンポーネントを作成しindex.vueにインポートする。
 
 ```
 $ mkdir -p components/atoms
@@ -103,7 +104,7 @@ $ touch components/atoms/TheButton.vue
 </template>
 ```
 
-定義したコンポーネントをimportの式を書かずとも、いきなりテンプレートに記述できる。
+定義したコンポーネントをimportの式を書かずとも、いきなりテンプレートにパスを含めてアッパーキャメルケースで記述できる。
 
 ```
 <template>
@@ -114,9 +115,9 @@ $ touch components/atoms/TheButton.vue
 </template>
 ```
 
-## propsの渡し方
+## [プロップス](https://v3.nuxtjs.org/docs/usage/nuxt-link#props)の渡し方
 
-nameのpropsを子のコンポーネントに渡す。
+nameの**props**を子のコンポーネントに渡す。
 
 ```
 <AtomsTheButton name="送信ボタン" />
@@ -156,120 +157,143 @@ const props = defineProps({
 ```
 
 
-## メタタグ
+## [メタタグ](https://v3.nuxtjs.org/docs/usage/meta-tags#meta-tags)
 
-MetaTag https://v3.nuxtjs.org/docs/usage/meta-tags#meta-tags
+各ページごとにメタ情報など共通のコードを読み込ませていくことができる。
 
-各ページごとにメタ情報などで読み込ませていくことができる
+```
 useMeta({
-      meta: [
-        { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1' }
-      ],
-      bodyAttrs: {
-        class: 'test'
-      }
-    })
+  meta: [
+    { 
+      name: 'viewport', 
+      content: 'width=device-width, initial-scale=1, maximum-scale=1' 
+    }
+  ],
+  bodyAttrs: {
+    class: 'test'
+  }
+})
+```
 
-## useFetch https://v3.nuxtjs.org/docs/usage/data-fetching#usefetch
-Axiosの代わりに非同期のAPIが実装できる
+## [非同期処理](https://v3.nuxtjs.org/docs/usage/data-fetching#usefetch)
 
-pages/index.vue
+**useFetch**を使用することでAxiosの代わりに非同期のAPIが実装できる。
 
+```
+$ mkdir pages
+$ touch pages/index.vue
+```
+
+```
 const { data } = useFetch('/api/hello', {
   method: 'POST',
   baseURL: 'https://xxx',
   params: {},
   body: {}
 })
+```
 
 以下のdataが返ってくる
 
+```
 const {
   data: Ref<DataT>,
   pending: Ref<boolean>,
   refresh: (force?: boolean) => Promise<void>,
   error?: any
 } = useFetch(url: string, options?)
+```
 
-
-オプションに様々な追加も可能
+オプションに様々な機能追加も可能
 
 「ohmyfetch」からのオプション
-method: Request method
-params: Query params
-headers: Request headers
-baseURL: Base URL for the request
-
-メソッド：リクエストメソッド
-params：クエリパラメータ
-ヘッダー：リクエストヘッダー
-baseURL：リクエストのベースURL 
+- method: Request method　リクエストメソッド
+- params: Query params　クエリパラメータ
+- headers: Request headers　リクエストヘッダー
+- baseURL: Base URL for the request　リクエストのベースURL 
 
 
-## サーバ指定
+## [サーバ](https://v3.nuxtjs.org/docs/directory-structure/server#server-directory)
 
-server/api/hello.ts
+```
+$ mkdir -p server/api
+$ touch server/api/hello.ts
+```
+
+```
 export default ({ req, res }) => 'Hello World'
+```
 
-index.vue
+- index.vue
+```
 const { data } = useFetch('/api/hello')
 console.log(data.value)
+```
 
+## [関数の外部管理](https://v3.nuxtjs.org/docs/directory-structure/composables#composables-directory)
 
-## Composabels
-importしなくても直接この中で定義した関数を呼び出せる。
-Vue2で使用していたmethodsの関数stateなどを一括管理できる
+importしなくても直接**Composabels**の中で定義した関数を呼び出せる。
+Vue2で使用していたmethodsと同様で、stateなどを一括管理するときに使用する。
 
+```
 composables　　専用ディレクトリを作成
  | - useFoo.ts　直下のファイルがインポートが対象
  | - useBar　　　サブディレクトリを作成した場合は直下のindexしかインポートしない
  | --- supportingFile.ts
  | --- index.ts
+```
 
-
-composables/useFoo.ts
 下記の場合fooで呼び出すとbarが表示される
 
+```
+$ mkdir composables
+$ touch composables/useFoo.ts
+```
+```
 export const useFoo = () => {
   return useState('foo', () => 'bar')
 }
+```
 
-index.vue
+- index.vue
+```
 const foo = useFoo()
 console.log(foo.value)
+```
 
 
-## Plugin https://v3.nuxtjs.org/docs/directory-structure/plugins#plugins-directory
+## [プラグイン](https://v3.nuxtjs.org/docs/directory-structure/plugins#plugins-directory)
 
 以前のNuxtは毎回プラグインの読み込みとimportが必要だったが定義するだけでよくなった
 
-plugin/myPlugin.ts
+```
+$ mkdir plugin
+$ touch plugin/myPlugin.ts
+```
+```
 export default defineNuxtPlugin(nuxtApp => {
   console.log('myPlugin')
 })
+```
 
-APIの場合はcreatedの初回読み込みができるが、ローカルストレージは読み込めない。
-ただPluginを使用するとクライアントかサーバー側
-どちらで実行するかをファイル名にclientと付けることで定義できるようになった。
-リダイレクト時に値が無ければローカルストレージから値が取れるようになる。
+APIの場合はcreatedの初回読み込みができるが、その段階ではローカルストレージは読み込めない。
+ただPluginを使用するとクライアントかサーバー側か、どちらで実行するかをファイル名で定義できるようになった。
+例えば、リダイレクト時に必要な値が無い場合は、ローカルストレージから参照できるようになる。
 
-https://zenn.dev/coedo/articles/route-middleware-nuxt3
+ファイル名に応じてライフサイクルとなる実行順序が以下のように異なってにくる。
 
-補足 : ライフサイクル（実行順序）
+- plugins/bar.server.ts サーバー側のレンダリング時に1度だけ
+- plugins/baz.client.ts クライアント側のレンダリング時に1度だけ(ローカルストレージから値がとれる)
+- middleware/foo.ts Pageコンポーネントの読み込みごと（ページ遷移の前）
 
-次のファイルがある場合の実行順序は次のとおり。
+## [環境変数](https://v3.nuxtjs.org/docs/usage/runtime-config#environment-variables)
 
-plugins/bar.server.ts サーバー側のレンダリング時に1度だけ
-plugins/baz.client.ts クライアント側のレンダリング時に1度だけ(ローカルストレージから値がとれる)
-middleware/foo.ts Pageコンポーネントの読み込みごと（ページ遷移の前）
-Page Component: setup <script setup> 等
-
-## nuxt.config.js
-
-環境変数の追加が可能。APIの呼び出しでよく使用する
+**nuxt.config.js**に環境変数の追加が可能。APIの呼び出しでよく使用する
 publicはクライアント(ブラウザ)で呼び出すことが可能
 privareはサーバのみで呼び出すことが可能
 
+- nuxt.config.js
+```
 export default defineNuxtConfig({
   publicRuntimeConfig: {
     APP_ENV: process.env.APP_ENV
@@ -278,21 +302,35 @@ export default defineNuxtConfig({
     API_SECRET: process.env.APP_SECRET
   }
 })
+```
 
-.env
+- .env
+```
 APP_ENV=dev
 API_SECRET=password
+```
 
-index.vue
 まとめてconfig内に呼び出し
+
+- index.vue
+```
 const config = useRuntimeConfig()
+```
 
-## TypeScript
+## [型指定](https://v3.nuxtjs.org/concepts/typescript#typescript)
 
-types/ApiTypes.ts
+全体にTypeScriptを使用することで、手数が増えるが安全な開発が行える。
+
+```
+$ mkdir types
+$ touch types/ApiTypes.ts
+```
+```
 export type GetUserApi = {
   AccessToken: String
 }
+```
 
-※認証関連でAWSの連携が必要になってきている。
-https://www.ragate.co.jp/blog/articles/684
+## [AWS Amplify](https://www.ragate.co.jp/blog/articles/684)
+
+AWSの連携しバックからフロントまでの認証の仕組みを提供することができる。
