@@ -10,7 +10,7 @@
 
 ## nuxtプロジェクトの[初期化](https://v3.nuxtjs.org/getting-started/installation)
 
-```
+```shell
 $ npx nuxi init nuxt3-app
 $ yarn
 $ yarn run dev 
@@ -19,7 +19,7 @@ $ yarn run dev
 ## 基本的な簡略記法
 
 - app.vue
-```
+```vue
 <template>
   <div>
     <NuxtPage />
@@ -27,14 +27,14 @@ $ yarn run dev
 </template>
 ```
 
-```
+```Shell
 $ mkdir pages
 $ touch pages/index.vue
 ```
 
 Nuxtの場合はscriptを上に記述する
 
-```
+```vue
 <script>
 import { defineComponent, ref } from '@vue/composition-api'
 
@@ -68,7 +68,7 @@ export default defineComponent ({
 リアクティブデータに関しては、refでもオブジェクトが使え、
 かつreactiveは値の受け渡しに制限(バグ)があるためrefを使用するのが一般的
 
-```
+```vue
 <script setup lang="ts">
 const name = ref<String>('松田')
 
@@ -81,7 +81,7 @@ const testFunc = () => {
 Vue3はcreatedは廃止され、script直下に関数を定義すれば描画時に実行される。
 mountedはonMonutedに名称が変わった。
 
-```
+```vue
 onMounted(() => {
   conslole.log()
 })
@@ -92,11 +92,11 @@ onMounted(() => {
 
 部品となるボタンコンポーネントを作成しindex.vueにインポートする。
 
-```
+```shell
 $ mkdir -p components/atoms
 $ touch components/atoms/TheButton.vue
 ```
-```
+```vue
 <template>
   <button>
     ボタン
@@ -106,7 +106,7 @@ $ touch components/atoms/TheButton.vue
 
 定義したコンポーネントをimportの式を書かずとも、いきなりテンプレートにパスを含めてアッパーキャメルケースで記述できる。
 
-```
+```vue
 <template>
   <div>
     {{ name }}{{ testFunc() }}
@@ -119,13 +119,13 @@ $ touch components/atoms/TheButton.vue
 
 nameの**props**を子のコンポーネントに渡す。
 
-```
+```vue
 <AtomsTheButton name="送信ボタン" />
 ```
 
 - 以前の方法
 
-```
+```vue
 <script>
 import { defineComponent, ref } from '@vue/composition-api'
 
@@ -148,7 +148,7 @@ export default defineComponent({
 
 definePropsの初期値に制約を指定することで、そのままpropsが参照できる。
 
-```
+```vue
 <script setup lang="ts">
 const props = defineProps({
   name: String
@@ -161,7 +161,7 @@ const props = defineProps({
 
 各ページごとにメタ情報など共通のコードを読み込ませていくことができる。
 
-```
+```vue
 useMeta({
   meta: [
     { 
@@ -179,12 +179,12 @@ useMeta({
 
 **useFetch**を使用することでAxiosの代わりに非同期のAPIが実装できる。
 
-```
+```shell
 $ mkdir pages
 $ touch pages/index.vue
 ```
 
-```
+```vue
 const { data } = useFetch('/api/hello', {
   method: 'POST',
   baseURL: 'https://xxx',
@@ -195,7 +195,7 @@ const { data } = useFetch('/api/hello', {
 
 以下のdataが返ってくる
 
-```
+```vue
 const {
   data: Ref<DataT>,
   pending: Ref<boolean>,
@@ -215,17 +215,17 @@ const {
 
 ## [サーバ](https://v3.nuxtjs.org/docs/directory-structure/server#server-directory)
 
-```
+```shell
 $ mkdir -p server/api
 $ touch server/api/hello.ts
 ```
 
-```
+```vue
 export default ({ req, res }) => 'Hello World'
 ```
 
 - index.vue
-```
+```vue
 const { data } = useFetch('/api/hello')
 console.log(data.value)
 ```
@@ -235,7 +235,7 @@ console.log(data.value)
 importしなくても直接**Composabels**の中で定義した関数を呼び出せる。
 Vue2で使用していたmethodsと同様で、stateなどを一括管理するときに使用する。
 
-```
+```txt
 composables　　専用ディレクトリを作成
  | - useFoo.ts　直下のファイルがインポートが対象
  | - useBar　　　サブディレクトリを作成した場合は直下のindexしかインポートしない
@@ -245,18 +245,18 @@ composables　　専用ディレクトリを作成
 
 下記の場合fooで呼び出すとbarが表示される
 
-```
+```shell
 $ mkdir composables
 $ touch composables/useFoo.ts
 ```
-```
+```vue
 export const useFoo = () => {
   return useState('foo', () => 'bar')
 }
 ```
 
 - index.vue
-```
+```vue
 const foo = useFoo()
 console.log(foo.value)
 ```
@@ -266,11 +266,11 @@ console.log(foo.value)
 
 以前のNuxtは毎回プラグインの読み込みとimportが必要だったが定義するだけでよくなった
 
+```shell
+$ mkdir plugins
+$ touch plugins/myPlugin.ts
 ```
-$ mkdir plugin
-$ touch plugin/myPlugin.ts
-```
-```
+```vue
 export default defineNuxtPlugin(nuxtApp => {
   console.log('myPlugin')
 })
@@ -293,7 +293,7 @@ publicはクライアント(ブラウザ)で呼び出すことが可能
 privareはサーバのみで呼び出すことが可能
 
 - nuxt.config.js
-```
+```vue
 export default defineNuxtConfig({
   publicRuntimeConfig: {
     APP_ENV: process.env.APP_ENV
@@ -305,7 +305,7 @@ export default defineNuxtConfig({
 ```
 
 - .env
-```
+```env
 APP_ENV=dev
 API_SECRET=password
 ```
@@ -313,7 +313,7 @@ API_SECRET=password
 まとめてconfig内に呼び出し
 
 - index.vue
-```
+```vue
 const config = useRuntimeConfig()
 ```
 
@@ -321,11 +321,11 @@ const config = useRuntimeConfig()
 
 全体にTypeScriptを使用することで、手数が増えるが安全な開発が行える。
 
-```
+```shell
 $ mkdir types
 $ touch types/ApiTypes.ts
 ```
-```
+```vue
 export type GetUserApi = {
   AccessToken: String
 }
